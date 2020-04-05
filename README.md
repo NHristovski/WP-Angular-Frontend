@@ -51,14 +51,14 @@
     - Клонирајте го [Product Service](https://github.com/NHristovski/WP-Project-Products "Product Service") проектот
       - Стартувајте го проектот со "dev" активен профил на Spring конфигурација
     - Одете на [http://localhost:8761/](http://localhost:8761/ "http://localhost:8761/")
-      - Почекајте да се појават 4рите проекти во делот "Instances currently registered with Eureka"
+      - Почекајте да се појават четирите проекти во делот "Instances currently registered with Eureka"
       - Стартувајте ја front-end апликацијата со упатството подоле
       
     - *** Алтернативен начин на стартување на back-end апликациите со Docker ***
       - Клонирајте го [Product Service](https://github.com/NHristovski/WP-Project-Products "Product Service") проектот
       - Влезете во фолдерот и извршете `docker-compose up -d`
       - Одете на [http://localhost:8761/](http://localhost:8761/ "http://localhost:8761/")
-        - Почекајте да се појават 4рите проекти во делот "Instances currently registered with Eureka"
+        - Почекајте да се појават четирите проекти во делот "Instances currently registered with Eureka"
         - Стартувајте ја front-end апликацијата со упатството подоле
 
 -  Стартување на front-end апликацијата
