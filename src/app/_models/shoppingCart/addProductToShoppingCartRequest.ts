@@ -1,4 +1,4 @@
 export class AddProductToShoppingCartRequest {
-  productId: number;
+  productId: string;
   quantity: number;
 }

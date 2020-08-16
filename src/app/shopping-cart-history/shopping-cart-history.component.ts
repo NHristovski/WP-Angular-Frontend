@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import {ShoppingCart} from '../_models/shoppingCart/shoppingCart';
-import {ShoppingCartService} from '../_services/shopping-cart.service';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {AlertService} from '../_services';
+import {Order} from '../_models/order/Order';
+import {OrderService} from '../_services/order.service';
+import {MatDialog} from '@angular/material/dialog';
+import {OrderDetailsComponent} from '../order-details/order-details.component';
 
 @Component({
   selector: 'app-shopping-cart-history',
@@ -11,28 +13,39 @@ import {AlertService} from '../_services';
 })
 export class ShoppingCartHistoryComponent implements OnInit {
 
-  public shoppingCart: ShoppingCart;
-  displayedColumns = ['product', 'name', 'quantity', 'cost', 'total', 'dateBought'];
+  public orders: Order[];
+  displayedColumns = ['orderId', 'createdOn', 'price', 'shippingAddress', 'status', 'actions'];
 
-  constructor(private shoppingCartService: ShoppingCartService,
+  constructor(private orderService: OrderService,
               private router: Router,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              public dialog: MatDialog) {
   }
 
   ngOnInit(): void {
 
-    this.shoppingCartService.getShoppingCartHistory()
+    this.orderService.getOrders()
       .subscribe(data => {
-        this.shoppingCart = new ShoppingCart();
-        this.shoppingCart.id = data.id;
-        this.shoppingCart.items = data.shoppingCartItems;
+        this.orders = data.orders;
 
       }, error => {
-        this.alertService.openSnackBar(`Failed to get the shopping history!`, true);
+        this.alertService.openSnackBar(`Failed to get the orders!`, true);
       });
   }
 
   productCatalog() {
     this.router.navigate(['/']);
+  }
+
+  showDetails(item: Order) {
+    const dialogRef = this.dialog.open(OrderDetailsComponent, {
+      width: '80%',
+    });
+    dialogRef.componentInstance.order = item;
+    dialogRef.componentInstance.orderStatus = 0;
+
+    dialogRef.afterClosed().subscribe(result => {
+      dialogRef.componentInstance.subscription.unsubscribe();
+    });
   }
 }

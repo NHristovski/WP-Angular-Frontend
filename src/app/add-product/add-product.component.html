@@ -1,104 +1,184 @@
-<!--<app-toolbar [admin]="true"></app-toolbar>-->
+<!--<mat-card class="add-photo-card">-->
+<!--  <mat-card-header>-->
+<!--&lt;!&ndash;    <mat-card-title>{{ edit ? 'Edit Product' : 'Add Product'}}</mat-card-title>&ndash;&gt;-->
+<!--  </mat-card-header>-->
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        <mat-card>
+          <div class="form-group">
+            <div>
+              <img [src]="imageURL" width="300" height="300" *ngIf="imageURL" style="margin: 15px">
+              <img [src]="imageLocation.url" width="300" height="300" *ngIf="!imageURL && imageLocation"
+                   style="margin: 15px">
+            </div>
+            <div *ngIf="submitted && (!imageFile && !imageLocation)" class="alert-danger">
+              <div>Image is required!</div>
+            </div>
 
-<!--<div class="container">-->
-<!--  <div class="row">-->
-<!--    <div class="col-2">-->
-<!--    </div>-->
-
-<!--    <div class="col-8">-->
-
-<div style="border: 3px outset cornflowerblue; padding: 3px; margin: 25px">
-  <div class="add-photo-container">
-    <mat-card class="add-photo-card">
-      <mat-card-header>
-        <mat-card-title>{{ edit ? 'Edit Product' : 'Add Product'}}</mat-card-title>
-      </mat-card-header>
-
-      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label for="name">Product name:</label>
-          <input id="name" type="text" formControlName="title" class="form-control"
-                 [ngClass]="{ 'is-invalid': submitted && getFormControls.title.errors }"/>
-          <div *ngIf="submitted && getFormControls.title.errors" class="invalid-feedback">
-            <div *ngIf="getFormControls.title.errors.required">Product name is required</div>
+            <label for="image">{{ edit ? 'Change image' : 'Add image'}}</label>
+            <input #imageInput id="image" type="file"
+                   accept="image/*" class="form-control" (change)="imageInputChange(imageInput)">
           </div>
-        </div>
-        <div class="form-group">
-          <label for="desc">Description:</label>
-          <input type="textarea" id="desc" formControlName="description" class="form-control"
-                 [ngClass]="{ 'is-invalid': submitted && getFormControls.description.errors }"/>
-          <div *ngIf="submitted && getFormControls.description.errors" class="invalid-feedback">
-            <div *ngIf="getFormControls.description.errors.required">Description is required</div>
-          </div>
-        </div>
-<!--        [value]="product ? product.description : ''"-->
+        </mat-card>
+      </div>
+      <div class="col-8">
 
-        <label for="cat">Categories:</label>
-        <mat-form-field id="cat" style="width: 100%">
-          <mat-label>Categories</mat-label>
-          <mat-select formControlName="categories" multiple>
-            <mat-option *ngFor="let category of categories"
-                        [value]="category.categoryName">{{category.categoryName}}</mat-option>
-          </mat-select>
-          <div *ngIf="submitted && getFormControls.categories.errors" class="invalid-feedback">
-            <div *ngIf="getFormControls.categories.errors">Description is required</div>
-          </div>
-        </mat-form-field>
+        <mat-card>
+          <label style="font-size: 20px">
+            Product information
+          </label><br/>
 
-
-        <div class="form-group">
-          <label for="price">Price:</label>
-          <input id="price" type="number" step="0.01" min="0" max="10" formControlName="price"
-                 class="form-control"
-                 [ngClass]="{ 'is-invalid': submitted && getFormControls.price.errors }"/>
-          <div *ngIf="submitted && getFormControls.price.errors" class="invalid-feedback">
-            <div *ngIf="getFormControls.price.errors.required">Price is required</div>
+          <br/>
+          <div *ngIf="edit">
+            <label>Created on <b>{{createdOn | date: 'medium' }}</b></label>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="stock">In stock:</label>
-          <input id="stock" type="number" formControlName="stock" class="form-control"
-                 [ngClass]="{ 'is-invalid': submitted && getFormControls.stock.errors }"/>
-          <div *ngIf="submitted && getFormControls.stock.errors" class="invalid-feedback">
-            <div *ngIf="getFormControls.stock.errors.required">Stock is required</div>
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label for="image">Image</label>
-          <input #imageInput id="image" type="file"
-                 accept="image/*" class="form-control" (change)="imageInputChange(imageInput)">
+          <div class="form-group">
+            <label for="name">Product name:</label>
+            <input id="name" type="text" formControlName="title" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && getFormControls.title.errors }"/>
+            <div *ngIf="submitted && getFormControls.title.errors" class="invalid-feedback">
+              <div *ngIf="getFormControls.title.errors.required">Product name is required</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="short_desc">Product short description:</label>
+            <input id="short_desc" type="text" formControlName="shortDescription" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && getFormControls.shortDescription.errors }"/>
+            <div *ngIf="submitted && getFormControls.shortDescription.errors" class="invalid-feedback">
+              <div *ngIf="getFormControls.shortDescription.errors.required">Product short description is required
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="long_desc">Description:</label>
+            <textarea id="long_desc" formControlName="longDescription" class="form-control"
+                      [ngClass]="{ 'is-invalid': submitted && getFormControls.longDescription.errors }" rows="3"
+                      style="resize: none">
+
+              </textarea>
+            <div *ngIf="submitted && getFormControls.longDescription.errors" class="invalid-feedback">
+              <div *ngIf="getFormControls.longDescription.errors.required">Product long description is required
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="stock" style="font-size: 15px">In Stock:</label><br/>
+
+            <div class="container">
+              <div class="row">
+                <div class="col-10">
+                  <input id="stock" type="number" step="1" min="0" formControlName="stock"
+                         class="form-control"
+                         [ngClass]="{ 'is-invalid': submitted && getFormControls.stock.errors }"
+                  /></div>
+                <div class="col-2" *ngIf="edit">
+                  <button type="button" mat-raised-button color="accent" style="margin: 3px"
+                          (click)="editStock(this.id, this.stock)">
+                    <mat-icon class="example-icon">store</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </mat-card>
+        <!--        [value]="product ? product.description : ''"-->
+
+        <br/>
+        <div class="container">
           <div class="row">
-            <div class="col-3">
-
+            <div class="col-6">
+              <mat-card>
+                <label for="cat" style="font-size: 15px">Categories:</label>
+                <mat-form-field id="cat" style="width: 100%">
+                  <mat-label>Categories</mat-label>
+                  <mat-select formControlName="categories" multiple>
+                    <mat-option *ngFor="let category of categories"
+                                [value]="category.categoryName.name">{{category.categoryName.name}}</mat-option>
+                  </mat-select>
+                  <div *ngIf="submitted && getFormControls.categories.errors" class="invalid-feedback">
+                    <div *ngIf="getFormControls.categories.errors">The product must be at least in one category</div>
+                  </div>
+                </mat-form-field>
+              </mat-card>
             </div>
             <div class="col-6">
-              <img [src]="imageURL" width="150" height="150" *ngIf="imageURL" style="margin: 15px">
-              <img [src]="imageLocation" width="150" height="150" *ngIf="!imageURL && imageLocation" style="margin: 15px">
-            </div>
-            <div class="col-3">
+              <mat-card>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-6">
+                      <div class="form-group">
+                        <label for="amount" style="font-size: 15px">Price:</label><br/>
+                        <input id="amount" type="number" step="0.1" min="0" formControlName="amount"
+                               class="form-control"
+                               [ngClass]="{ 'is-invalid': submitted && getFormControls.amount.errors }"/>
+                        <div *ngIf="submitted && getFormControls.amount.errors" class="invalid-feedback">
+                          <div *ngIf="getFormControls.amount.errors.required">Product price amount is required</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <br/>
+                      <mat-form-field id="curr" style="width: 100%">
+                        <mat-label>Currency</mat-label>
+                        <mat-select formControlName="currency">
+                          <mat-option *ngFor="let currency of currencies"
+                                      [value]="currency">{{currency}}</mat-option>
+                        </mat-select>
+                        <div *ngIf="submitted && getFormControls.currency.errors" class="invalid-feedback">
+                          <div *ngIf="getFormControls.currency.errors">The price currency is required</div>
+                        </div>
+                      </mat-form-field>
+                    </div>
 
+                  </div>
+                </div>
+              </mat-card>
             </div>
-          </div>
-
-          <div *ngIf="submitted && (!imageFile && !imageLocation)" class="alert-danger">
-            <div>Image is required!</div>
           </div>
         </div>
-
-        <div class="form-group">
-          <button mat-raised-button color="accent" type="submit" [disabled]="loading" class="btn btn-primary">
+        <br/>
+        <div class="form-group" style="float: right">
+          <button mat-raised-button color="accent" type="submit" [disabled]="loading"
+                  class="btn btn-primary">
             <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-             {{ edit ? 'Save Changes' : 'Add Product' }}
+            {{ edit ? 'Save Changes' : 'Add Product' }}
           </button>
-          <button mat-raised-button color="primary" [mat-dialog-close]="false" style="margin-left: 10px">Close</button>
+          <button mat-raised-button color="primary" [mat-dialog-close]="false" style="margin-left: 10px">
+            Close
+          </button>
         </div>
-      </form>
 
-    </mat-card>
+      </div>
+    </div>
   </div>
+</form>
 
-</div>
+<!--</mat-card>-->
+
+
+<!--        <div class="form-group">-->
+<!--          <label for="createdOn">Created on:</label>-->
+<!--          <input id="createdOn" type="text" formControlName="createdOn" class="form-control"-->
+<!--                 [ngClass]="{ 'is-invalid': submitted && getFormControls.createdOn.errors }" disabled="true"/>-->
+<!--          <div *ngIf="submitted && getFormControls.createdOn.errors" class="invalid-feedback">-->
+<!--            <div *ngIf="getFormControls.createdOn.errors.required">The creation time of the product is missing</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--          <label for="stock">In stock:</label>-->
+<!--          <input id="stock" type="number" formControlName="stock" class="form-control"-->
+<!--                 [ngClass]="{ 'is-invalid': submitted && getFormControls.stock.errors }"/>-->
+<!--          <div *ngIf="submitted && getFormControls.stock.errors" class="invalid-feedback">-->
+<!--            <div *ngIf="getFormControls.stock.errors.required">Stock is required</div>-->
+<!--          </div>-->
+<!--        </div>-->
+
 <!--    </div>-->
 <!--    <div class="col-2">-->
 

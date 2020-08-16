@@ -1,24 +1,29 @@
-<mat-card>
+<mat-card style="margin-top: 15px;">
   <div class="container">
     <div class="row">
       <div class="col-4">
         <div (click)="openDialog(product)">
-          <img [src]="product.imageLocation" [width]="125" [height]="125"/>
+          <img style="cursor: pointer;" [src]="product.imageLocation.url" [width]="150"
+               [height]="150"/>
 
         </div>
       </div>
       <div class="col-8">
-        <h2><a (click)="openDialog(product)">{{product.title}}</a></h2>
-        <br/>
+        <h2><a style="color: dodgerblue; cursor: pointer"
+               (click)="openDialog(product)">
+          {{ (product.information.title.length > 15) ?
+          (product.information.title | slice:0:15) + '..' : (product.information.title)}}
+        </a></h2>
+        <h3> {{ (product.information.shortDescription.length > 20) ? (product.information.shortDescription | slice:0:20) + '..' : (product.information.shortDescription) }}</h3>
 
         <div class="container">
           <div class="row">
-            <div class="col" style="font-size: 20px">
-              <b>{{product.price}} $</b>
+            <div class="col-7" style="font-size: 16px;">
+              <b>{{product.price.amount}}</b> &nbsp; <sup>{{product.price.currency}}</sup>
             </div>
-            <div class="col" style="font-size: 15px">
-              <span *ngIf="product.averageRating !== 0">
-                {{product.averageRating | number:'1.2-2' }} <span class="starr">&#9733;</span>
+            <div class="col-5" style="font-size: 15px">
+              <span *ngIf="product.ratingStatistics.averageRating !== 0">
+                {{product.ratingStatistics.averageRating | number:'1.2-2' }} <span class="starr">&#9733;</span>
               </span>
             </div>
           </div>
@@ -27,7 +32,8 @@
         <div>Your rating:
           <ngb-rating [(rate)]="currentRate" (click)="ratingClicked()">
             <ng-template let-fill="fill" let-index="index">
-              <span class="star" [class.filled]="fill === 100" [class.bad]="index < 3" [class.good]="index > 6">&#9733;</span>
+              <span class="star" [class.filled]="fill === 100" [class.bad]="index < 3"
+                    [class.good]="index > 6">&#9733;</span>
             </ng-template>
           </ngb-rating>
         </div>

@@ -1,14 +1,15 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Constants} from '../_helpers/constants';
-import {AddCategoryRequest} from '../_models/AddCategoryRequest';
+import {AddCategoryRequest} from '../_models/message/request/AddCategoryRequest';
+import {Name} from '../_models/_value/Name';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
 
-  private apiUrl = Constants.baseApiUrl + '/product/admin';
+  private apiUrl = Constants.baseApiUrl + '/product';
 
   constructor(private http: HttpClient) {
   }
@@ -19,21 +20,27 @@ export class AdminService {
 
   addCategory(name: string) {
     const request = new AddCategoryRequest();
-    request.categoryName = name;
+    const nameObj = new Name();
+    nameObj.name = name;
 
-    return this.http.post(`${this.apiUrl}/addCategory`, request);
+    request.categoryName = nameObj;
+
+    return this.http.post(`${this.apiUrl}/category/add_category`, request);
   }
 
-  deleteCategory(id: number) {
-    return this.http.delete(`${this.apiUrl}/deleteCategory/${id}`);
+  deleteCategory(id: string) {
+    return this.http.delete(`${this.apiUrl}/category/delete_category/${id}`);
   }
 
-  deleteProduct(id: number) {
-    console.log('in delete product')
-    return this.http.delete(`${this.apiUrl}/deleteProduct/${id}`);
+  deleteProduct(id: string) {
+    return this.http.delete(`${this.apiUrl}/product/delete_product/${id}`);
   }
 
   search(value: string) {
-    return this.http.get(`${this.apiUrl}/search/${value}`);
+    return this.http.get(`${this.apiUrl}/product/search/${value}`);
+  }
+
+  refresh(id: string) {
+    return this.http.put(`${this.apiUrl}/product/refresh/${id}`, null);
   }
 }

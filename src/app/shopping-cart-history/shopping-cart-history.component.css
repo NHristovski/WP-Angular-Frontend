@@ -3,15 +3,24 @@
      Every toolbar row uses a flexbox row layout. */
   flex: 1 1 auto;
 }
+
 .example-container {
-  width: 70%;
-  height: 425px;
+  width: 90%;
+  height: 60%;
+  position: absolute;
   overflow: auto;
-  margin-left: 140px;
+  margin-left: 40px;
   margin-top: 20px;
 }
 
-
+.small-container {
+  width: 90%;
+  height: 60%;
+  position: absolute;
+  overflow: auto;
+  margin-left: 40px;
+  margin-top: 20px;
+}
 
 .container .btn-holder {
   justify-content: flex-end;

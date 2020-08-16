@@ -37,6 +37,8 @@ import {MatNativeDateModule} from '@angular/material/core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AdminComponent } from './admin/admin.component';
 import {MatSelectModule} from '@angular/material/select';
+import { RestockDialogComponent } from './restock-dialog/restock-dialog.component';
+import { OrderDetailsComponent } from './order-details/order-details.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,6 +55,8 @@ import {MatSelectModule} from '@angular/material/select';
     ConfirmDialogComponent,
     CheckoutComponent,
     AdminComponent,
+    RestockDialogComponent,
+    OrderDetailsComponent,
   ],
   imports: [
     BrowserModule,

@@ -11,10 +11,12 @@
       </div>
     </div>
     <ul>
-      <li class="list-group-item">
-        <a [href]="'/?categoryName=Top Products'"> Top Products </a>
+      <li class="list-group-item"
+          [class.selected]="(this.route.snapshot.queryParams['categoryId'] || '') === 'top_products'">
+        <a [href]="'/?categoryId=top_products'"> Top Rated Products </a>
       </li>
-      <li class="list-group-item">
+      <li class="list-group-item"
+          [class.selected]="(this.route.snapshot.queryParams['categoryId'] || '') === ''">
         <a [href]="'/'"> All Products </a>
       </li>
     </ul>
@@ -29,15 +31,20 @@
       <div class="row">
         <div class="col-2"></div>
         <div class="col-10">
-          <li *ngFor="let category of categories" class="list-group-item">
-            <a [href]="'/?categoryName=' + category.categoryName">{{ category.categoryName }}</a>
-          </li>
+          <div *ngIf="categories != null">
+            <li *ngFor="let category of categories" class="list-group-item"
+                [class.selected]="category.categoryId.id === (this.route.snapshot.queryParams['categoryId'] || '')">
+              <a [href]="'/?categoryId=' + category.categoryId.id"
+                 style="word-wrap: break-word">{{ category.categoryName.name }}</a>
+            </li>
+          </div>
         </div>
       </div>
     </ul>
   </div>
+
   <div class="col-10">
-    <mat-grid-list cols="3" [rowHeight]="230">
+    <mat-grid-list cols="{{screen.width > 1900 ? 3 : 2}}" [rowHeight]="250">
       <mat-grid-tile
         *ngFor="let product of products"
         [colspan]="1"
@@ -63,23 +70,25 @@
               <mat-icon class="example-icon">arrow_forward</mat-icon>
             </button>
 
-            <form [formGroup]="renderForm">
-              <div class="form-group">
-                <div class="row">
-                  <div class="col-6">
-                    <input id="name" type="number" formControlName="render" class="form-control" placeholder="Render"
-                           [ngClass]="{ 'is-invalid': submitted && getFormControls.render.errors }"/>
-                    <div *ngIf="submitted && getFormControls.render.errors" class="invalid-feedback">
-                      <div *ngIf="getFormControls.render.errors.required">Render is required</div>
-                      <div *ngIf="getFormControls.render.errors.min">Render cannot be less than 1</div>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <button style="display: inline-block" mat-raised-button color="primary" (click)="onSubmit()">Change</button>
-                  </div>
-                </div>
-              </div>
-            </form>
+            <!--            <form [formGroup]="renderForm">-->
+            <!--              <div class="form-group">-->
+            <!--                <div class="row">-->
+            <!--                  <div class="col-6">-->
+            <!--                    <input id="name" type="number" formControlName="render" class="form-control" placeholder="Render"-->
+            <!--                           [ngClass]="{ 'is-invalid': submitted && getFormControls.render.errors }"/>-->
+            <!--                    <div *ngIf="submitted && getFormControls.render.errors" class="invalid-feedback">-->
+            <!--                      <div *ngIf="getFormControls.render.errors.required">Render is required</div>-->
+            <!--                      <div *ngIf="getFormControls.render.errors.min">Render cannot be less than 1</div>-->
+            <!--                    </div>-->
+            <!--                  </div>-->
+            <!--                  <div class="col-6">-->
+            <!--                    <button style="display: inline-block" mat-raised-button color="primary" (click)="onSubmit()">-->
+            <!--                      Change-->
+            <!--                    </button>-->
+            <!--                  </div>-->
+            <!--                </div>-->
+            <!--              </div>-->
+            <!--            </form>-->
 
           </div>
         </div>
@@ -88,3 +97,5 @@
     </div>
 
   </div>
+
+</div>

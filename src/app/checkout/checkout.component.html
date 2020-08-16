@@ -1,23 +1,23 @@
 <form (ngSubmit)="onSubmit()" class="example-form">
-    <h3>Contact:</h3>
-    <mat-form-field class="example-full-width">
+  <h3>Contact:</h3>
+  <mat-form-field class="example-full-width">
 
-      <mat-label>Delivery Address</mat-label>
-      <input matInput [formControl]="deliveryFormControl" [errorStateMatcher]="matcher"
-             placeholder="Ex. 1960 W CHELSEA AVE STE 2006R">
-      <mat-error *ngIf="deliveryFormControl.hasError('required')">
-        Delivery Address is <strong>required</strong>
-      </mat-error>
-    </mat-form-field>
-    <br/>
-    <mat-form-field>
-      <mat-label>Phone number</mat-label>
-      <input matInput [formControl]="phoneFormControl"
-             [errorStateMatcher]="matcher" placeholder="Ex. 07x-xxx-xxx">
-      <mat-error *ngIf="phoneFormControl.hasError('Wrong Number Format')">
-        Wrong number format
-      </mat-error>
-    </mat-form-field>
+    <mat-label>Delivery Address</mat-label>
+    <input matInput [formControl]="deliveryFormControl" [errorStateMatcher]="matcher"
+           placeholder="Ex. 1960 W CHELSEA AVE STE 2006R">
+    <mat-error *ngIf="deliveryFormControl.hasError('required')">
+      Delivery Address is <strong>required</strong>
+    </mat-error>
+  </mat-form-field>
+  <br/>
+  <mat-form-field>
+    <mat-label>Phone number</mat-label>
+    <input matInput [formControl]="phoneFormControl"
+           [errorStateMatcher]="matcher" placeholder="Ex. 07x-xxx-xxx">
+    <mat-error *ngIf="phoneFormControl.hasError('Wrong Number Format')">
+      Wrong number format
+    </mat-error>
+  </mat-form-field>
 
   <hr>
 
@@ -42,28 +42,34 @@
     </mat-error>
   </mat-form-field>
 
-  <mat-form-field>
-    <mat-label>Expiry Date</mat-label>
-    <input matInput [matDatepicker]="picker" [formControl]="expirationDateFormControl" [errorStateMatcher]="matcher">
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-    <mat-error *ngIf="expirationDateFormControl.hasError('required')">
-      Expiry date is <strong>required</strong>
-    </mat-error>
-  </mat-form-field>
-
-  <br>
-
-  <mat-form-field>
-    <mat-label>CCV</mat-label>
-    <input matInput [formControl]="ccvFormControl" [errorStateMatcher]="matcher" placeholder="Ex. xxx">
-    <mat-error *ngIf="ccvFormControl.hasError('maxlength') || ccvFormControl.hasError('minlength')">
-      The number does not have 3 digits
-    </mat-error>
-    <mat-error *ngIf="ccvFormControl.hasError('required')">
-      CCV is <strong>required</strong>
-    </mat-error>
-  </mat-form-field>
+  <div class="container">
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field>
+          <mat-label>Expiry Date</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="expirationDateFormControl"
+                 [errorStateMatcher]="matcher">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="expirationDateFormControl.hasError('required')">
+            Expiry date is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field>
+          <mat-label>CCV</mat-label>
+          <input matInput [formControl]="ccvFormControl" [errorStateMatcher]="matcher" placeholder="Ex. xxx">
+          <mat-error *ngIf="ccvFormControl.hasError('maxlength') || ccvFormControl.hasError('minlength')">
+            The number does not have 3 digits
+          </mat-error>
+          <mat-error *ngIf="ccvFormControl.hasError('required')">
+            CCV is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
 
   <br/>
   <hr>

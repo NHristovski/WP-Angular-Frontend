@@ -1,6 +1,8 @@
 import {ShoppingCartItem} from './shoppingCartItem';
+import {ShoppingCartId} from '../_value/shoppingCart/ShoppingCartId';
 
 export class ShoppingCart {
-  id: number;
-  items: ShoppingCartItem[];
+  version: number;
+  shoppingCartId: ShoppingCartId;
+  shoppingCartItems: ShoppingCartItem[];
 }

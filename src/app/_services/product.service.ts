@@ -1,47 +1,56 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AddProductRequest} from '../_models';
-import {RateRequest} from '../_models/rateRequest';
-import {AuthenticationService} from './authentication.service';
 import {Observable} from 'rxjs';
 import {Constants} from '../_helpers/constants';
+import {AuthenticationService} from './authentication.service';
+import {EditProductRequest} from '../_models/message/request/EditProductRequest';
+import {ProductId} from '../_models/_value/product/ProductId';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
 
-  private apiUrl = Constants.baseApiUrl + '/product';
+  private productApiUrl = Constants.baseApiUrl + '/product';
+  private ratingApiUrl = Constants.baseApiUrl + '/ratings';
 
-  // private apiUrl = 'https://wp-api-gateway.herokuapp.com/product';
+  // private productApiUrl = 'https://wp-api-gateway.herokuapp.com/product';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private authenticationService: AuthenticationService) {
   }
 
   addProduct(product: AddProductRequest) {
-    return this.http.post(`${this.apiUrl}/admin/addProduct`, product);
+    return this.http.post(`${this.productApiUrl}/product/add_product`, product);
   }
 
-  getAllProducts(from: number, howMany: number) {
-    return this.http.get(`${this.apiUrl}/product?from=${from}&howMany=${howMany}`);
+  getAllProducts(page: number, size: number) {
+    return this.http.get(`${this.productApiUrl}/product?page=${page}&size=${size}`);
   }
 
-  rateProduct(id: number, currentRate: number): Observable<any> {
-    const rateRequest = new RateRequest();
-    rateRequest.id = id;
-    rateRequest.rating = currentRate;
-    return this.http.post(`${this.apiUrl}/product/rate`, rateRequest);
+  rateProduct(productId: string, currentRate: number): Observable<any> {
+    const rateRequest = {
+      productId,
+      applicationUserId: this.authenticationService.getCurrentUserId(),
+      rating: currentRate
+    };
+    return this.http.post(`${this.ratingApiUrl}/ratings/rate`, rateRequest);
   }
 
-  getProduct(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/product/${id}`);
+  getProduct(id: ProductId): Observable<any> {
+    return this.http.get(`${this.productApiUrl}/product/${id.id}`);
   }
 
-  getAllProductsForCategory(from: number, howMany: number, categoryName: string) {
-    return this.http.get(`${this.apiUrl}/product/forCategory/${categoryName}?from=${from}&howMany=${howMany}`);
+  getAllProductsForCategory(page: number, size: number, categoryId: string) {
+    return this.http.get(`${this.productApiUrl}/product/in_category/${categoryId}?page=${page}&size=${size}`);
   }
 
-  editProduct(request: AddProductRequest, id: number) {
-    return this.http.put(`${this.apiUrl}/admin/editProduct/${id}`, request);
+  getTopRatedProducts(page: number, size: number) {
+    return this.http.get(`${this.productApiUrl}/product/top_rated?page=${page}&size=${size}`);
+  }
+
+  editProduct(request: EditProductRequest, id: string) {
+    return this.http.put(`${this.productApiUrl}/product/edit_product`, request);
   }
 }

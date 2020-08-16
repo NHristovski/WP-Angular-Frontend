@@ -4,20 +4,23 @@ import {AddProductToShoppingCartRequest} from '../_models/shoppingCart/addProduc
 import {Observable} from 'rxjs';
 import {BuyRequest} from '../_models/shoppingCart/buyRequest';
 import {Constants} from '../_helpers/constants';
+import {ShoppingCartId} from '../_models/_value/shoppingCart/ShoppingCartId';
+import {ShoppingCartItemId} from '../_models/_value/shoppingCart/ShoppingCartItemId';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingCartService {
 
-  private apiUrl = Constants.baseApiUrl + '/product';
+  private apiUrl = Constants.baseApiUrl + '/shopping-cart';
 
   // private apiUrl = 'https://wp-api-gateway.herokuapp.com/product';
 
   constructor(private http: HttpClient) {
   }
 
-  addProductToCart(id: number, quantity: number) {
+  addProductToCart(id: string, quantity: number) {
     const request = new AddProductToShoppingCartRequest();
     request.productId = id;
     request.quantity = quantity;
@@ -26,8 +29,7 @@ export class ShoppingCartService {
   }
 
   getShoppingCart(): Observable<any> {
-
-    return this.http.get(`${this.apiUrl}/shoppingCart`);
+    return this.http.get(`${this.apiUrl}/shopping_cart`);
   }
 
   getShoppingCartHistory(): Observable<any> {
@@ -35,16 +37,20 @@ export class ShoppingCartService {
     return this.http.get(`${this.apiUrl}/shoppingCart/history`);
   }
 
-  incrementQuantity(id: number) {
-    return this.http.put(`${this.apiUrl}/shoppingCart/item/increment/${id}`, null);
+  incrementQuantity(shoppingCartId: ShoppingCartId, shoppingCartItemId: ShoppingCartItemId) {
+    return this.http.put(
+      `${this.apiUrl}/shopping_cart/${shoppingCartId.id}/item/${shoppingCartItemId.id}/increment`, null
+    );
   }
 
-  decrementQuantity(id: number) {
-    return this.http.put(`${this.apiUrl}/shoppingCart/item/decrement/${id}`, null);
+  decrementQuantity(shoppingCartId: ShoppingCartId, shoppingCartItemId: ShoppingCartItemId) {
+    return this.http.put(
+      `${this.apiUrl}/shopping_cart/${shoppingCartId.id}/item/${shoppingCartItemId.id}/decrement`, null
+    );
   }
 
-  delete(cartId: number, itemId: number) {
-    return this.http.delete(`${this.apiUrl}/shoppingCart/delete/${cartId}/${itemId}`);
+  delete(cartId: ShoppingCartId, itemId: ShoppingCartItemId) {
+    return this.http.delete(`${this.apiUrl}/shopping_cart/delete/${cartId.id}/${itemId.id}`);
   }
 
   buy(buyReq: BuyRequest) {

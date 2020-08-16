@@ -4,8 +4,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {WorkerService} from '../_services/worker.service';
 import {ProductService} from '../_services/product.service';
 import {CategoryService} from '../_services/category.service';
-import {Products} from '../_models/products';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Product} from '../_models/product';
 
 @Component({
   templateUrl: 'home.component.html',
@@ -13,13 +13,14 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 })
 export class HomeComponent implements OnInit {
   response: any;
-  products: any = [];
+  products: Product[] = [];
   maxPages: number;
-  howMany: number;
+  size: number;
   currentPage: number;
   categories: any = [];
   submitted = false;
   renderForm: FormGroup;
+  screen: any;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -35,13 +36,16 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.screen = screen;
+
     this.currentPage = 1;
     this.maxPages = 1;
-    this.howMany = 9;
+    this.size = 9;
 
     this.getAllCategories();
 
-    const categoryName = this.route.snapshot.queryParams['categoryName'] || '';
+    const categoryName = this.route.snapshot.queryParams['categoryId'] || '';
 
     if (categoryName) {
       this.getAllProductsForCategory(categoryName);
@@ -50,7 +54,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.renderForm = this.formBuilder.group({
-      render: ['', Validators.compose ([Validators.required, Validators.min(1)])]
+      render: ['', Validators.compose([Validators.required, Validators.min(1)])]
     });
 
   }
@@ -70,31 +74,48 @@ export class HomeComponent implements OnInit {
   }
 
   getAllProducts() {
-    this.productService.getAllProducts(this.currentPage - 1, this.howMany)
+    this.productService.getAllProducts(this.currentPage - 1, this.size)
       .subscribe(data => {
         this.response = data;
-        this.products = this.response.productResponses;
+        this.products = this.response.personalizedProducts;
+        console.log('the products are', this.products);
         this.maxPages = this.response.maxPages;
       }, error => {
         this.alertService.openSnackBar(`Failed to get the products`, true);
       });
   }
 
-  getAllProductsForCategory(categoryName: string) {
-    this.productService.getAllProductsForCategory(this.currentPage - 1, this.howMany, categoryName)
+  getAllProductsForCategory(categoryId: string) {
+    if (categoryId === 'top_products') {
+      this.findTopRatedProducts();
+    } else {
+      this.productService.getAllProductsForCategory(this.currentPage - 1, this.size, categoryId)
+        .subscribe(data => {
+          this.response = data;
+          this.products = this.response.personalizedProducts;
+          this.maxPages = this.response.maxPages;
+        }, error => {
+          this.alertService.openSnackBar(`Failed to get the products for the category ${categoryId}`, true);
+        });
+    }
+  }
+
+  private findTopRatedProducts() {
+    this.productService.getTopRatedProducts(this.currentPage - 1, this.size)
       .subscribe(data => {
         this.response = data;
-        this.products = this.response.productResponses;
+        this.products = this.response.personalizedProducts;
         this.maxPages = this.response.maxPages;
       }, error => {
-        this.alertService.openSnackBar(`Failed to get the products for the category ${categoryName}`, true);
+        this.alertService.openSnackBar(`Failed to get the products for the category Top Rated Products`, true);
       });
   }
 
   getAllCategories() {
     this.categoryService.getAllCategories()
       .subscribe(data => {
-        this.categories = data;
+        this.categories = data.categories;
+        console.log('this.categories', this.categories);
       }, error => {
         this.alertService.openSnackBar('Failed to get the product categories', true);
       });
@@ -102,16 +123,17 @@ export class HomeComponent implements OnInit {
 
   previous() {
     this.currentPage = this.currentPage - 1;
-    const categoryName = this.route.snapshot.queryParams['categoryName'] || '';
+    const categoryName = this.route.snapshot.queryParams['categoryId'] || '';
     if (categoryName) {
       this.getAllProductsForCategory(categoryName);
     } else {
       this.getAllProducts();
     }
   }
+
   next() {
     this.currentPage = this.currentPage + 1;
-    const categoryName = this.route.snapshot.queryParams['categoryName'] || '';
+    const categoryName = this.route.snapshot.queryParams['categoryId'] || '';
     if (categoryName) {
       this.getAllProductsForCategory(categoryName);
     } else {
@@ -126,12 +148,12 @@ export class HomeComponent implements OnInit {
       console.error('invalid form');
       return;
     }
-    this.howMany = this.getFormControls.render.value;
+    this.size = this.getFormControls.render.value;
     this.submitted = false;
 
-    const categoryName = this.route.snapshot.queryParams['categoryName'] || '';
-    if (categoryName) {
-      this.getAllProductsForCategory(categoryName);
+    const categoryId = this.route.snapshot.queryParams['categoryId'] || '';
+    if (categoryId) {
+      this.getAllProductsForCategory(categoryId);
     } else {
       this.getAllProducts();
     }

@@ -1,22 +1,25 @@
 .star {
   font-size: 1.5rem;
-  color: #b0c4de;
+  color: lightgrey;
 }
+
 .filled {
-  color: #1e90ff;
+  color: gold;
 }
+
 .bad {
-  color: #deb0b0;
+  color: lightgrey;
 }
+
 .filled.bad {
-  color: #ff1e1e;
+  color: gold;
 }
 
 .filled.good {
-  color: green;
+  color: gold;
 }
 
 .starr {
-  font-size: 1.4rem;
-  color: orange;
+  font-size: 1.7rem;
+  color: gold;
 }

@@ -3,9 +3,9 @@ import {AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn, V
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {ShoppingCart} from '../_models/shoppingCart/shoppingCart';
-import {ShoppingCartService} from '../_services/shopping-cart.service';
-import {BuyRequest} from '../_models/shoppingCart/buyRequest';
 import {AlertService} from '../_services';
+import {PaymentService} from '../_services/payment.service';
+import {Price} from '../_models/_value/product/Price';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -19,7 +19,7 @@ export function telNumberValidator(): ValidatorFn {
   return (control: AbstractControl) => {
     const num = control.value;
     if (num.length === 0) {
-      return null;
+      return {'Wrong Number Format': {value: control.value}};
     }
 
     const ok = num.match(/\d/g).length === 9;
@@ -79,6 +79,7 @@ export function luhnValidate(fullcode) {
 export class CheckoutComponent implements OnInit {
 
   shoppingCart: ShoppingCart;
+  price: Price;
   showError = false;
 
   deliveryFormControl = new FormControl('', [
@@ -111,7 +112,7 @@ export class CheckoutComponent implements OnInit {
   loading: boolean;
 
   constructor(private dialogRef: MatDialogRef<CheckoutComponent>,
-              private shoppingCartService: ShoppingCartService,
+              private paymentService: PaymentService,
               private alertService: AlertService) {
   }
 
@@ -122,16 +123,18 @@ export class CheckoutComponent implements OnInit {
   onSubmit() {
     this.loading = true;
 
-    const buyReq = new BuyRequest();
-    buyReq.shoppingCartId = this.shoppingCart.id;
-    buyReq.cardHolderName = this.cardHolderNameFormControl.value;
-    buyReq.ccv = this.ccvFormControl.value;
-    buyReq.creditCard = this.creditCardFormControl.value;
-    buyReq.deliveryAddress = this.deliveryFormControl.value;
-    buyReq.expiryDate = this.expirationDateFormControl.value;
-    buyReq.phone = this.phoneFormControl.value;
+    const buyReq = {
+      shoppingCartId: this.shoppingCart.shoppingCartId,
+      cardHolderName: this.cardHolderNameFormControl.value,
+      ccv: this.ccvFormControl.value,
+      creditCard: this.creditCardFormControl.value,
+      deliveryAddress: this.deliveryFormControl.value,
+      expiryDate: this.expirationDateFormControl.value,
+      phone: this.phoneFormControl.value,
+      price: this.price
+    };
 
-    this.shoppingCartService.buy(buyReq)
+    this.paymentService.charge(buyReq)
       .subscribe(data => {
         this.alertService.openSnackBar('Success!', false);
         this.loading = false;

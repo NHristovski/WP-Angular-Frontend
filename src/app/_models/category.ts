@@ -1,4 +1,8 @@
+import {Name} from './_value/Name';
+import {CategoryId} from './_value/category/CategoryId';
+
 export class Category {
-  id: number;
-  categoryName: string ;
+  categoryId: CategoryId;
+  version: number;
+  categoryName: Name;
 }

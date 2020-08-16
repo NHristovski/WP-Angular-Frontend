@@ -29,6 +29,7 @@ export class AuthenticationService {
         const currUser = new User();
         currUser.token = resp.headers.get('Authorization');
         currUser.roles = resp.headers.get('roles');
+        currUser.id = resp.headers.get('id');
 
         currUser.username = username;
 
@@ -54,5 +55,9 @@ export class AuthenticationService {
     console.log('curr user roles: ', roles);
 
     return roles.includes('ROLE_ADMIN');
+  }
+
+  getCurrentUserId() {
+    return this.currentUserValue.id;
   }
 }

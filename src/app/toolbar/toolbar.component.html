@@ -2,18 +2,47 @@
   <mat-toolbar color="primary">
     <mat-toolbar-row>
       <span>The Everything Store</span>
-      <button mat-button [routerLink]="''">Product Catalog</button>
+      <mat-label>
+        <a mat-menu-item (click)="productCatalog()"
+           style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
+           [class.clicked]="this.toolbarStateService.currentlyActive === 0">
+          Product Catalog
+        </a>
+      </mat-label>
+      <!--      <button mat-button [routerLink]="''">Product Catalog</button>-->
+      <mat-label>
+        <!--        <a mat-menu-item [href]="'/shopping-cart'"-->
+        <a mat-menu-item (click)="shoppingCart()"
+           style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
+           [class.clicked]="this.toolbarStateService.currentlyActive === 1">
+          My Shopping Cart
+        </a>
+      </mat-label>
+      <mat-label>
+        <!--        <a mat-menu-item [href]="'/shopping-cart-history'"-->
+        <a mat-menu-item (click)="history()"
+           style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
+           [class.clicked]="this.toolbarStateService.currentlyActive === 2">
+          My Orders</a>
+      </mat-label>
+      <mat-menu></mat-menu>
+      <!--      <button mat-button [matMenuTriggerFor]="menu1">-->
+      <!--        Shopping Cart-->
+      <!--      </button>-->
 
-      <button mat-button [matMenuTriggerFor]="menu1">
-        Shopping Cart
-      </button>
+      <!--      <mat-menu #menu1="matMenu" [overlapTrigger]="false">-->
+      <!--        <button mat-menu-item (click)="shoppingCart()">Your Shopping Cart</button>-->
+      <!--        <button mat-menu-item (click)="history()">Shopping History</button>-->
+      <!--      </mat-menu>-->
 
-      <mat-menu #menu1="matMenu" [overlapTrigger]="false">
-        <button mat-menu-item (click)="shoppingCart()">Your Shopping Cart</button>
-        <button mat-menu-item (click)="history()">Shopping History</button>
-      </mat-menu>
-
-      <button mat-button [routerLink]="'/admin'">Admin Panel</button>
+      <!--      <button mat-button [routerLink]="'/admin'">Admin Panel</button>-->
+      <mat-label>
+        <!--        <a mat-menu-item [href]="'/shopping-cart-history'"-->
+        <a mat-menu-item (click)="productManagement()" *ngIf="this.authService.hasAdminRole()"
+           style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
+           [class.clicked]="this.toolbarStateService.currentlyActive === 3">
+          Product Management</a>
+      </mat-label>
 
       <span class="example-fill-remaining-space"></span>
 
@@ -23,4 +52,3 @@
     </mat-toolbar-row>
   </mat-toolbar>
 </div>
-

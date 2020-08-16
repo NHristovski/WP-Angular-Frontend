@@ -9,8 +9,11 @@
     <h2>Categories</h2>
     <ul class="list-group" style="font-size: 17px">
       <li *ngFor="let category of categories" class="list-group-item">
-        <a [href]="'/?categoryName=' + category.categoryName">{{ category.categoryName }}</a>
-        <button mat-button color="warn" style="margin-left: 5px; width: 20px; height: 30px" (click)="deleteCategory(category.id)">X</button>
+        <a style="word-wrap: break-word"
+           [href]="'/?categoryId=' + category.categoryId.id">{{ category.categoryName.name }}</a>
+        <button mat-button color="warn" style="margin-left: 5px; width: 20px; height: 30px; float:right"
+                (click)="deleteCategory(category.categoryId.id)">X
+        </button>
       </li>
     </ul>
 
@@ -24,7 +27,10 @@
           <div *ngIf="getFormControls.name.errors.required">Category name is required</div>
         </div>
       </div>
-      <button mat-raised-button color="primary" (click)="onSubmit()">Add category</button>
+      <button mat-raised-button color="primary" (click)="onSubmit()">
+        <mat-icon>add</mat-icon>
+        Add category
+      </button>
     </form>
   </div>
   <div class="col-9">
@@ -45,10 +51,15 @@
             </div>
           </div>
           <div class="col-2">
-            <button mat-raised-button color="primary" (click)="onSearchSubmit()">Search</button>
+            <button mat-raised-button color="primary" (click)="onSearchSubmit()">
+              <mat-icon>search</mat-icon>
+            </button>
           </div>
           <div class="col-3">
-            <button mat-raised-button color="accent" (click)="addProduct()">Add Product</button>
+            <button mat-raised-button color="accent" (click)="addProduct()">
+              <mat-icon>add</mat-icon>
+              Add Product
+            </button>
           </div>
         </div>
       </div>
@@ -62,19 +73,34 @@
     <div class="example-container mat-elevation-z8" *ngIf="hasProducts">
       <table mat-table [dataSource]="products">
         <ng-container matColumnDef="product">
-          <th mat-header-cell *matHeaderCellDef> Product </th>
-          <td mat-cell *matCellDef="let item"><img [src]="item.imageLocation"></td>
+          <th mat-header-cell *matHeaderCellDef> Product</th>
+          <td mat-cell *matCellDef="let item"><img [src]="item.imageLocation.url"></td>
         </ng-container>
 
         <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef> ID </th>
-          <td mat-cell *matCellDef="let item"> {{ item.id }}</td>
+          <th mat-header-cell *matHeaderCellDef> ID</th>
+          <td mat-cell *matCellDef="let item"> {{ item.productId.id }}</td>
         </ng-container>
 
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Name </th>
-          <td mat-cell *matCellDef="let item"> {{ item.title }}</td>
+          <th mat-header-cell *matHeaderCellDef> Name</th>
+          <td mat-cell *matCellDef="let item"> {{ (item.information.title.length > 15) ?
+            (item.information.title | slice:0:10) + '..' :
+            (item.information.title) + '&nbsp;'.repeat(17 - item.information.title.length) }}
+          </td>
+
         </ng-container>
+
+        <ng-container matColumnDef="createdOn">
+          <th mat-header-cell *matHeaderCellDef> Created On</th>
+          <td mat-cell *matCellDef="let item"> {{ item.createdOn | date: 'medium'}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="stock">
+          <th mat-header-cell *matHeaderCellDef> In Stock</th>
+          <td mat-cell *matCellDef="let item">{{item.stock.quantity}}</td>
+        </ng-container>
+
 
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef> Action</th>
@@ -82,6 +108,18 @@
 
             <button mat-raised-button color="info" style="margin: 3px" (click)="edit(item)">
               <mat-icon class="example-icon">edit</mat-icon>
+            </button>
+
+            <button mat-raised-button color="primary" style="margin: 3px" (click)="refresh(item)">
+              <mat-icon class="example-icon">restore</mat-icon>
+            </button>
+
+            <button mat-raised-button color="accent" style="margin: 3px" (click)="editStock(item)">
+              <mat-icon class="example-icon">store</mat-icon>
+            </button>
+
+            <button mat-raised-button color="warn" style="margin: 3px" (click)="deleteProduct(item)">
+              <mat-icon class="example-icon">delete</mat-icon>
             </button>
 
           </td>

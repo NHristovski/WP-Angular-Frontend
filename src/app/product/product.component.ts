@@ -16,6 +16,9 @@ export class ProductComponent implements OnInit {
   @Input() product: Product;
   @Input() currentRate;
 
+  initialRatingStatistics: any;
+  initialUserRating: any;
+
   constructor(private productService: ProductService,
               private shoppingCardService: ShoppingCartService,
               private alertService: AlertService,
@@ -23,15 +26,44 @@ export class ProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initialRatingStatistics = this.product.ratingStatistics;
+    this.initialUserRating = this.product.currentUserRating;
   }
 
   ratingClicked() {
-    setTimeout(() => this.productService.rateProduct(this.product.id, this.currentRate)
+    setTimeout(() => this.productService.rateProduct(this.product.productId.id, this.currentRate)
       .subscribe(data => {
-        this.product = data;
+        this.product.currentUserRating = this.currentRate;
+
+        if (this.initialUserRating === 0) {
+          // new rating added
+          this.adjustRatingStatisticsForNewRating();
+        } else {
+          // rating changed
+          this.adjustRatingStatisticsForChangedRating();
+        }
       }, error => {
         this.alertService.openSnackBar(`Failed to rate the product`, true);
       }), 200);
+  }
+
+  private adjustRatingStatisticsForChangedRating() {
+    this.product.ratingStatistics = {
+      totalRatings: this.initialRatingStatistics.totalRatings,
+      averageRating: (
+        (this.initialRatingStatistics.totalRatings * this.initialRatingStatistics.averageRating)
+        + this.currentRate - this.initialUserRating) / (this.initialRatingStatistics.totalRatings)
+    };
+  }
+
+  private adjustRatingStatisticsForNewRating() {
+    this.product.ratingStatistics = {
+      totalRatings: this.initialRatingStatistics.totalRatings + 1,
+      averageRating: (
+          (this.initialRatingStatistics.totalRatings * this.initialRatingStatistics.averageRating) + this.currentRate
+        )
+        / (this.initialRatingStatistics.totalRatings + 1)
+    };
   }
 
   openDialog(productRef: Product) {
@@ -40,18 +72,6 @@ export class ProductComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       this.product = dialogRef.componentInstance.product;
-      const quantity = dialogRef.componentInstance.howMany;
-
-      if (result) {
-        this.shoppingCardService.addProductToCart(this.product.id, quantity)
-          .subscribe(
-            data => {
-              this.alertService.openSnackBar(`Product ${this.product.title} added to the shopping cart successfully`, false);
-            }, error => {
-              this.alertService.openSnackBar(`Failed to add the product ${this.product.title} to the shopping cart!`, true);
-            }
-          );
-      }
     });
   }
 }

@@ -1,45 +1,96 @@
 <app-toolbar></app-toolbar>
 
-<img src="../../assets/images/sc.png" style="margin-left: 140px; margin-right: 30px">
+<img src="../../assets/images/sc.png" style="margin-left: 40px; margin-right: 30px">
 <span style="font-size: 28px;">Your Shopping Cart</span>
 
-<div class="example-container mat-elevation-z8" *ngIf="shoppingCart">
+<mat-card *ngIf="shoppingCart && shoppingCart.shoppingCartItems.length === 0" style="margin-left: 40px; width: 90%; padding-bottom: 30px">
+  <p style="display: inline; font-size: large;">
+    Your shopping cart is empty.
+  </p>
+
+  <div style="display: inline-block; float: right; margin-bottom: 50px">
+    <div>
+      <button mat-raised-button color="accent" (click)="productCatalog()">Product Catalog</button>
+    </div>
+  </div>
+</mat-card>
+
+<mat-card *ngIf="shoppingCart && shoppingCart.shoppingCartItems.length !== 0" style="margin-left: 40px; width: 90%; padding-bottom: 60px">
+  <div class="row">
+    <b
+      style="display: inline; font-size: large; padding-top: 15px; padding-left: 20px">
+      Total: {{ totalCost | number:'1.0-2'}}
+    </b>
+    <div [formGroup]="currencyForm">
+      <mat-form-field id="curr" style="width: 50%; margin-left: 15px">
+        <mat-label>Currency</mat-label>
+        <mat-select (selectionChange)="currencyChanged($event)" formControlName="currency">
+          <mat-option *ngFor="let currency of currencies"
+                      [value]="currency">{{currency}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div style="display: inline-block; float: right; margin-bottom: 20px">
+<!--    <div class="btn-holder">-->
+      <button mat-raised-button color="accent" style="margin-right: 15px" (click)="proceedToCheckout()"
+              [disabled]="getTotalCost() === 0"> Proceed
+        to checkout
+      </button>
+      <button mat-raised-button color="primary" (click)="productCatalog()">Back</button>
+<!--    </div>-->
+  </div>
+</mat-card>
+
+<div class="mat-elevation-z8" *ngIf="shoppingCart"
+     [ngClass]="(shoppingCart && shoppingCart.shoppingCartItems.length === 0) ? 'small-container' : 'example-container'">
   <table mat-table [dataSource]="dataSource">
-    <ng-container matColumnDef="product">
-      <th mat-header-cell *matHeaderCellDef> Product</th>
-      <td mat-cell *matCellDef="let item"><img [src]="item.product.imageLocation"></td>
-    </ng-container>
 
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Name</th>
-      <td mat-cell *matCellDef="let item"> {{ item.product.title }}</td>
+      <td mat-cell *matCellDef="let item">
+        <button mat-menu-item (click)="showDetails(item.productId)"
+                style="color: dodgerblue; padding-right: 100px">
+          {{ (item.productName.name.length > 45) ?
+          (item.productName.name | slice:0:45) + '..' :
+          (item.productName.name) + '&nbsp;'.repeat(47 - item.productName.name.length) }}
+        </button>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="quantity">
       <th mat-header-cell *matHeaderCellDef> Quantity</th>
-      <td mat-cell *matCellDef="let item"> {{ item.quantity }}</td>
+      <td mat-cell *matCellDef="let item"> {{ item.quantity.quantity }}</td>
     </ng-container>
 
     <!-- Cost Column -->
     <ng-container matColumnDef="cost">
       <th mat-header-cell *matHeaderCellDef> Cost</th>
-      <td mat-cell *matCellDef="let item"> {{item.product.price | number:'1.2-2'| currency}} </td>
+      <td mat-cell *matCellDef="let item"> {{item.price.amount | number:'1.2-2'}} {{item.price.currency}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalCost">
+      <th mat-header-cell *matHeaderCellDef> Total Cost</th>
+      <td mat-cell *matCellDef="let item"> {{(item.price.amount * item.quantity.quantity) | number:'1.2-2'}}
+        {{item.price.currency}} </td>
     </ng-container>
 
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef> Action</th>
       <td mat-cell *matCellDef="let item">
         <button mat-raised-button color="accent" style="margin: 3px"
-                [disabled]="item.quantity >= item.product.stock" (click)="incrementQuantity(item.id)">
+                (click)="incrementQuantity(shoppingCart.shoppingCartId, item)"
+                [disabled]="maxQuantityReachedProducts.indexOf(item.productId.id) > -1">
           <mat-icon class="example-icon">exposure_plus_1</mat-icon>
         </button>
 
-        <button mat-raised-button color="info" style="margin: 3px" (click)="decrementQuantity(item.id)"
-                [disabled]="item.quantity === 1">
+        <button mat-raised-button color="info" style="margin: 3px"
+                (click)="decrementQuantity(shoppingCart.shoppingCartId, item)">
           <mat-icon class="example-icon">exposure_neg_1</mat-icon>
         </button>
 
-        <button mat-raised-button color="warn" style="margin: 3px" (click)="delete(shoppingCart.id, item)">
+        <button mat-raised-button color="warn" style="margin: 3px"
+                (click)="delete(shoppingCart.shoppingCartId, item)">
           <mat-icon class="example-icon">delete</mat-icon>
         </button>
       </td>
@@ -49,26 +100,3 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </div>
-
-<mat-card *ngIf="shoppingCart && shoppingCart.items.length !== 0">
-  <b style="display: inline; font-size: large">Total: {{ getTotalCost() | currency }}</b>
-  <div class="container" style="display: inline-block">
-    <div class="btn-holder">
-      <button mat-raised-button color="accent" style="margin-right: 15px" (click)="proceedToCheckout()" [disabled]="getTotalCost() === 0"> Proceed
-        to checkout
-      </button>
-      <button mat-raised-button color="primary" (click)="productCatalog()">Back</button>
-    </div>
-  </div>
-</mat-card>
-
-<mat-card *ngIf="shoppingCart && shoppingCart.items.length === 0">
-  <p style="display: inline; font-size: large; color: red">
-    Your shopping cart is empty. Check out our products
-  </p>
-  <div class="container" style="display: inline-block">
-    <div class="btn-holder">
-      <button mat-raised-button color="accent" (click)="productCatalog()">Product Catalog</button>
-    </div>
-  </div>
-</mat-card>

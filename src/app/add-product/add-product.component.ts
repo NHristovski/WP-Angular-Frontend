@@ -5,8 +5,15 @@ import {AddProductRequest} from '../_models';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {CategoryService} from '../_services/category.service';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AlertService} from '../_services';
+import {ProductId} from '../_models/_value/product/ProductId';
+import {ImageLocation} from '../_models/_value/product/ImageLocation';
+import {ProductInformation} from '../_models/_value/product/ProductInformation';
+import {Price} from '../_models/_value/product/Price';
+import {EditProductRequest} from '../_models/message/request/EditProductRequest';
+import {Quantity} from '../_models/_value/product/Quantity';
+import {RestockDialogComponent} from '../restock-dialog/restock-dialog.component';
 
 @Component({
   selector: 'app-add-product',
@@ -22,16 +29,19 @@ export class AddProductComponent implements OnInit {
   imageURL: string | ArrayBuffer;
   categories: any = [];
   newProduct: any;
+  currencies = ['MKD', 'USD', 'EUR'];
 
-  productCategories: any;
-  title: string;
-  imageLocation: string;
-  price: number;
-  id: number;
-  description: string;
-  stock: number;
+  id: ProductId;
+  version: number;
+  imageLocation: ImageLocation;
+  information: ProductInformation;
+  createdOn: string;
+  price: Price;
+  productCategories: string[];
+  stock: Quantity;
   edit: boolean;
 
+  shouldEditStock = false;
 
   // convenience getter for easy access to form fields
   get getFormControls() {
@@ -41,17 +51,19 @@ export class AddProductComponent implements OnInit {
   ngOnInit() {
 
     this.categoryService.getAllCategories().subscribe(data => {
-      this.categories = data;
+      this.categories = data.categories;
     }, error1 => {
       this.alertService.openSnackBar(`Failed to get the categories!`, true);
     });
 
     this.productForm = this.formBuilder.group({
-      title: [this.title, Validators.required],
+      title: [this.information.title, Validators.required],
+      shortDescription: [this.information.shortDescription, Validators.required],
+      longDescription: [this.information.longDescription, Validators.required],
       categories: [this.productCategories, Validators.required],
-      description: [this.description, Validators.required],
-      price: [this.price, Validators.required],
-      stock: [this.stock, Validators.required],
+      amount: [this.price.amount, Validators.required],
+      currency: [this.price.currency, Validators.required],
+      stock: [{value: this.stock.quantity, disabled: this.edit}]
     });
   }
 
@@ -59,7 +71,7 @@ export class AddProductComponent implements OnInit {
 
     this.submitted = true;
 
-    if (this.productForm.invalid || (!this.imageFile && !this.imageLocation)) {
+    if (this.productForm.invalid || (!this.imageFile && !this.imageLocation.url)) {
       this.alertService.openSnackBar('Invalid form!', true);
       return;
     }
@@ -79,8 +91,15 @@ export class AddProductComponent implements OnInit {
               private router: Router,
               private categoryService: CategoryService,
               private dialogRef: MatDialogRef<AddProductComponent>,
+              public dialog: MatDialog,
               private alertService: AlertService) {
 
+  }
+
+  formatDate(date: string) {
+    let tempDate = date.replace('T', ' ');
+    tempDate = tempDate.replace('Z', '');
+    return tempDate;
   }
 
   imageInputChange(imageInput: any) {
@@ -98,64 +117,102 @@ export class AddProductComponent implements OnInit {
   }
 
   addProduct() {
-    console.log('in add product');
-    this.imageService.uploadImage(this.imageFile)
-      .subscribe(
-        data => {
-          const imageLink = data.data.link;
-
-          const addProductRequest = new AddProductRequest();
-
-          addProductRequest.description = this.getFormControls.description.value;
-          addProductRequest.title = this.getFormControls.title.value;
-          addProductRequest.imageLocation = imageLink;
-          addProductRequest.price = this.getFormControls.price.value;
-          addProductRequest.stock = this.getFormControls.stock.value;
-          addProductRequest.categoryNames = this.getFormControls.categories.value;
-
-          this.productService.addProduct(addProductRequest)
-            .subscribe(productData => {
-              console.log('new product', productData);
-              this.loading = false;
-              this.alertService.openSnackBar('Product added successfully', false);
-              this.dialogRef.close(true);
-            }, error1 => {
-              this.alertService.openSnackBar('Failed to add product', true);
-              this.dialogRef.close(false);
-            });
-        },
-        error2 => {
-          this.alertService.openSnackBar('Failed to upload the image!', true);
-          this.dialogRef.close(false);
-        });
-  }
-
-  // getCategoryNames() {
-  //   return this.categories.map(cat => cat.categoryName);
-  // }
-  private editProduct() {
-    // if imageUrl is not null then change it
     if (this.imageFile) {
       this.imageService.uploadImage(this.imageFile)
         .subscribe(
           data => {
-            const imageLink = data.data.link;
+            // let addProductRequest: AddProductRequest;
+            this.sendRequestToAddProduct(data.data.link);
+          },
+          error2 => {
+            this.alertService.openSnackBar('Failed to upload the image!', true);
+            this.dialogRef.close(false);
+          });
+    } else {
+      this.sendRequestToAddProduct(this.imageLocation.url);
+    }
+  }
 
-            const request = new AddProductRequest();
+  private sendRequestToAddProduct(url: string) {
+    const addProductRequest: AddProductRequest = {
+      product: {
+        createdOn: null,
+        imageLocation: {
+          url
+        },
+        information: {
+          title: this.getFormControls.title.value,
+          shortDescription: this.getFormControls.shortDescription.value,
+          longDescription: this.getFormControls.longDescription.value
+        },
+        price: {
+          amount: this.getFormControls.amount.value,
+          currency: this.getFormControls.currency.value
+        },
+        productId: this.id,
+        ratingStatistics: null,
+        version: this.version,
+        categories: this.getFormControls.categories.value.map(catName => {
+          return this.categories.filter(ct => ct.categoryName.name === catName)[0];
+        }),
+        stock: this.getFormControls.stock.value
+      }
+    };
 
-            request.description = this.getFormControls.description.value;
-            request.title = this.getFormControls.title.value;
-            request.imageLocation = imageLink;
-            request.price = this.getFormControls.price.value;
-            request.stock = this.getFormControls.stock.value;
-            request.categoryNames = this.getFormControls.categories.value;
+    console.log('addProductRequest', addProductRequest);
 
-            this.productService.editProduct(request, this.id)
-              .subscribe(productData => {
-                console.log('new product', productData);
+    this.productService.addProduct(addProductRequest)
+      .subscribe(productData => {
+        console.log('new product added', productData.product);
+        this.loading = false;
+        this.alertService.openSnackBar('Product added successfully', false);
+        this.dialogRef.close(true);
+      }, error1 => {
+        this.alertService.openSnackBar('Failed to add product', true);
+        this.dialogRef.close(false);
+      });
+  }
+
+  private editProduct() {
+    // if imageUrl is not null then change it
+    console.log('edit Product clicked');
+    if (this.imageFile) {
+      this.imageService.uploadImage(this.imageFile)
+        .subscribe(
+          data => {
+            const request: EditProductRequest = {
+              product: {
+                createdOn: null,
+                imageLocation: {
+                  url: data.data.link
+                },
+                information: {
+                  title: this.getFormControls.title.value,
+                  shortDescription: this.getFormControls.shortDescription.value,
+                  longDescription: this.getFormControls.longDescription.value
+                },
+                price: {
+                  amount: this.getFormControls.amount.value,
+                  currency: this.getFormControls.currency.value
+                },
+                productId: this.id,
+                ratingStatistics: null,
+                version: this.version,
+                categories: this.getFormControls.categories.value.map(catName => {
+                  return this.categories.filter(ct => ct.categoryName.name === catName)[0];
+                }),
+                stock: null
+              }
+            };
+
+            console.log('editProductRequest', request);
+
+            this.productService.editProduct(request, this.id.id)
+              .subscribe(editResponse => {
                 this.loading = false;
-                this.newProduct = productData;
+                this.newProduct = editResponse.product;
                 this.alertService.openSnackBar('Product added successfully', false);
+                console.log('new product after edit service', this.newProduct);
                 this.dialogRef.close(true);
               }, error11 => {
                 this.alertService.openSnackBar('Failed to add the product', true);
@@ -167,25 +224,60 @@ export class AddProductComponent implements OnInit {
             this.dialogRef.close(false);
           });
     } else {
-      const editProductRequest = new AddProductRequest();
+      const editProductRequest: EditProductRequest = {
+        product: {
+          createdOn: null,
+          imageLocation: this.imageLocation,
+          information: {
+            title: this.getFormControls.title.value,
+            shortDescription: this.getFormControls.shortDescription.value,
+            longDescription: this.getFormControls.longDescription.value
+          },
+          price: {
+            amount: this.getFormControls.amount.value,
+            currency: this.getFormControls.currency.value
+          },
+          productId: this.id,
+          ratingStatistics: null,
+          version: this.version,
+          categories: this.getFormControls.categories.value.map(catName => {
+            return this.categories.filter(ct => ct.categoryName.name === catName)[0];
+          }),
+          stock: null
+        }
+      };
 
-      editProductRequest.description = this.getFormControls.description.value;
-      editProductRequest.title = this.getFormControls.title.value;
-      editProductRequest.imageLocation = this.imageLocation;
-      editProductRequest.price = this.getFormControls.price.value;
-      editProductRequest.stock = this.getFormControls.stock.value;
-      editProductRequest.categoryNames = this.getFormControls.categories.value;
-
-      this.productService.editProduct(editProductRequest, this.id)
-        .subscribe(productData => {
+      console.log('editProductRequest', editProductRequest);
+      this.productService.editProduct(editProductRequest, this.id.id)
+        .subscribe(editResponse => {
           this.loading = false;
-          this.newProduct = productData;
-          this.alertService.openSnackBar('Product added successfully', false);
+          this.newProduct = editResponse.product;
+          console.log('new product after edit service', this.newProduct);
+          this.alertService.openSnackBar('Product edited successfully', false);
           this.dialogRef.close(true);
         }, error21 => {
-          this.alertService.openSnackBar('Failed to add the product!', true);
+          this.alertService.openSnackBar('Failed to edit the product!', true);
           this.dialogRef.close(false);
         });
     }
   }
+
+  editStock(id: ProductId, stock: Quantity) {
+    const dialogRef = this.dialog.open(RestockDialogComponent, {
+      width: '300px',
+      height: '240px'
+    });
+
+
+    dialogRef.componentInstance.productId = id;
+    dialogRef.componentInstance.oldStock = stock;
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.stock = dialogRef.componentInstance.newStock;
+        this.productForm.controls.stock.setValue(this.stock.quantity);
+      }
+    });
+  }
+
 }

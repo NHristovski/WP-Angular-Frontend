@@ -4,33 +4,47 @@
     <div class="container">
       <div class="row">
         <div class="col-4">
-          <img [src]="product.imageLocation" [width]="250" [height]="250"/>
+          <h1><b> </b></h1>
+          <br/>
+          <br/>
+          <img [src]="product.imageLocation.url" [width]="250" [height]="250"/>
+
+          <br/>
+          <br/>
+          <div class="col">
+            <p style="font-size: 20px; color: red" *ngIf="product.stock.quantity === 0">Currently not in
+              stock.</p>
+          </div>
         </div>
         <div class="col-8">
-          <h1><b>{{product.title}}</b></h1>
+          <h1 style="word-break: break-word"><b>{{product.information.title}}</b></h1>
 
           <hr/>
 
           <ul class="list-group list-group-horizontal" style="font-size: 17px">
             <li *ngFor="let category of product.categories" class="list-group-item">
-              <a  [href]="'/?categoryName=' + category.categoryName" >{{ category.categoryName }}</a>
+              <a [href]="'/?categoryId=' + category.categoryId.id">{{ category.categoryName.name }}</a>
             </li>
           </ul>
 
           <br/>
 
-          <h2>{{product.description}}</h2>
+          <h2>{{product.information.shortDescription}}</h2>
 
+          <textarea rows="5" style="resize: none; width: 100%; border: none; background: white"
+                    disabled="disabled">{{product.information.longDescription}}</textarea>
+
+          <br/>
           <br/>
 
           <div class="container">
             <div class="row">
               <div class="col" style="font-size: 20px">
-                <b>{{ (howMany * product.price) | number:'1.2-2'}} $</b>
+                <b>{{ (quantity * product.price.amount) | number:'1.2-2'}} {{product.price.currency}}</b>
               </div>
               <div class="col" style="font-size: 17px">
-              <span *ngIf="product.averageRating !== 0">
-                {{product.averageRating | number:'1.2-2' }} <span class="starr">&#9733;</span>
+              <span *ngIf="product.ratingStatistics.averageRating !== 0">
+                {{product.ratingStatistics.averageRating | number:'1.2-2' }} <span class="starr">&#9733;</span>
               </span>
               </div>
             </div>
@@ -48,17 +62,19 @@
                 </ngb-rating>
               </div>
               <div class="col" style="font-size: 17px">
-                Total ratings: {{product.totalRatings }}<img src="../../assets/images/person-icon.png" alt=""
-                                                             [width]="25" [height]="25">
+                Total ratings: {{product.ratingStatistics.totalRatings }}<img src="../../assets/images/person-icon.png"
+                                                                              alt=""
+                                                                              [width]="25" [height]="25">
               </div>
             </div>
             <br/>
             <br/>
             <div class="container">
               <div class="row">
-                <div class="col">
-                  <p style="font-size: 17px; color: red" *ngIf="product.stock === 0">Currently not in stock.</p>
-                </div>
+                <!--                <div class="col">-->
+                <!--                  <p style="font-size: 17px; color: red" *ngIf="product.stock.quantity === 0">Currently not in-->
+                <!--                    stock.</p>-->
+                <!--                </div>-->
               </div>
             </div>
           </div>
@@ -71,17 +87,17 @@
 </mat-dialog-content>
 
 
-
 <mat-dialog-actions align="end">
 
   <button mat-button [mat-dialog-close]="false">Close</button>
 
   <input class="form-control" type="number" value="1"
          id="example-number-input" style="width: 100px; margin: 10px;"
-         [min]="1" [max]="product.stock"
-         [(ngModel)]="howMany">
+         [min]="1" [max]="product.stock.quantity"
+         [(ngModel)]="quantity">
 
-  <button mat-button [mat-dialog-close]="true" mat-raised-button color="accent" [disabled]="product.stock === 0">Add to Cart</button>
+  <button mat-button mat-raised-button color="accent"
+          [disabled]="product.stock.quantity === 0" (click)="addToCartClicked()">Add to Cart</button>
 </mat-dialog-actions>
 
 
