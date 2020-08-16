@@ -10,7 +10,13 @@ pipeline {
 
   stages {
 
-    stage('Maven build') {
+    stage('npm install') {
+      steps {
+        sh "/bin/npm install"
+      }
+    }
+
+    stage('ng build') {
       steps {
         sh "/bin/ng build --prod"
       }
