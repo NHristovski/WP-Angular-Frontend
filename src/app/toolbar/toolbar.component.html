@@ -3,7 +3,7 @@
     <mat-toolbar-row>
       <span>The Everything Store</span>
       <mat-label>
-        <a mat-menu-item (click)="productCatalog()"
+        <a mat-menu-item (click)="productCatalog()" *ngIf="!this.authService.hasAdminRole()"
            style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
            [class.clicked]="this.toolbarStateService.currentlyActive === 0">
           Product Catalog
@@ -12,7 +12,7 @@
       <!--      <button mat-button [routerLink]="''">Product Catalog</button>-->
       <mat-label>
         <!--        <a mat-menu-item [href]="'/shopping-cart'"-->
-        <a mat-menu-item (click)="shoppingCart()"
+        <a mat-menu-item (click)="shoppingCart()" *ngIf="!this.authService.hasAdminRole()"
            style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
            [class.clicked]="this.toolbarStateService.currentlyActive === 1">
           My Shopping Cart
@@ -20,7 +20,7 @@
       </mat-label>
       <mat-label>
         <!--        <a mat-menu-item [href]="'/shopping-cart-history'"-->
-        <a mat-menu-item (click)="history()"
+        <a mat-menu-item (click)="history()" *ngIf="!this.authService.hasAdminRole()"
            style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
            [class.clicked]="this.toolbarStateService.currentlyActive === 2">
           My Orders</a>
@@ -42,6 +42,14 @@
            style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
            [class.clicked]="this.toolbarStateService.currentlyActive === 3">
           Product Management</a>
+      </mat-label>
+
+      <mat-label>
+        <!--        <a mat-menu-item [href]="'/shopping-cart-history'"-->
+        <a mat-menu-item (click)="orderManagement()" *ngIf="this.authService.hasAdminRole()"
+           style="font-size: 16px;margin-left: 30px; color: white; text-decoration: none;"
+           [class.clicked]="this.toolbarStateService.currentlyActive === 4">
+          Order Management</a>
       </mat-label>
 
       <span class="example-fill-remaining-space"></span>

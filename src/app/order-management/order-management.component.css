@@ -1,0 +1,35 @@
+.example-fill-remaining-space {
+  /* This fills the remaining space, by using flexbox.
+     Every toolbar row uses a flexbox row layout. */
+  flex: 1 1 auto;
+}
+
+.example-container {
+  width: 90%;
+  height: 60%;
+  position: absolute;
+  overflow: auto;
+  margin-left: 40px;
+  margin-top: 20px;
+}
+
+
+.container .btn-holder {
+  justify-content: flex-end;
+  display: flex;
+}
+
+mat-card {
+  width: 70%;
+  margin-left: 140px;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+}
+
+img {
+  width: 75px;
+  height: 75px;
+}

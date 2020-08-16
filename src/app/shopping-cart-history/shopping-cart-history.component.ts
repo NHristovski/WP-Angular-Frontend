@@ -5,6 +5,7 @@ import {Order} from '../_models/order/Order';
 import {OrderService} from '../_services/order.service';
 import {MatDialog} from '@angular/material/dialog';
 import {OrderDetailsComponent} from '../order-details/order-details.component';
+import {ToolbarStateService} from '../_services/toolbar-state.service';
 
 @Component({
   selector: 'app-shopping-cart-history',
@@ -19,10 +20,13 @@ export class ShoppingCartHistoryComponent implements OnInit {
   constructor(private orderService: OrderService,
               private router: Router,
               private alertService: AlertService,
-              public dialog: MatDialog) {
+              public dialog: MatDialog,
+              private toolbarStateService: ToolbarStateService) {
   }
 
   ngOnInit(): void {
+
+    this.toolbarStateService.changeCurrentlyActive(2);
 
     this.orderService.getOrders()
       .subscribe(data => {
@@ -46,6 +50,12 @@ export class ShoppingCartHistoryComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       dialogRef.componentInstance.subscription.unsubscribe();
+
+      const index = this.orders.findIndex(order => order.orderId.id === item.orderId.id);
+
+      if (index > -1) {
+        this.orders[index].status = dialogRef.componentInstance.order.status;
+      }
     });
   }
 }

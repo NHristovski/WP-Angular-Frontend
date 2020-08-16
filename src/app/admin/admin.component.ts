@@ -8,6 +8,7 @@ import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component
 import {AlertService} from '../_services';
 import {Product} from '../_models/product';
 import {RestockDialogComponent} from '../restock-dialog/restock-dialog.component';
+import {ToolbarStateService} from '../_services/toolbar-state.service';
 
 @Component({
   selector: 'app-admin',
@@ -30,7 +31,8 @@ export class AdminComponent implements OnInit {
               private categoryService: CategoryService,
               private formBuilder: FormBuilder,
               public dialog: MatDialog,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private toolbarStateService: ToolbarStateService) {
   }
 
 
@@ -44,6 +46,8 @@ export class AdminComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.toolbarStateService.changeCurrentlyActive(3);
+
     this.categoryService.getAllCategories().subscribe(data => {
       this.categories = data.categories;
     }, error => {

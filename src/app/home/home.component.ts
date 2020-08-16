@@ -6,6 +6,7 @@ import {ProductService} from '../_services/product.service';
 import {CategoryService} from '../_services/category.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Product} from '../_models/product';
+import {ToolbarStateService} from '../_services/toolbar-state.service';
 
 @Component({
   templateUrl: 'home.component.html',
@@ -31,11 +32,14 @@ export class HomeComponent implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private alertService: AlertService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private toolbarStateService: ToolbarStateService
   ) {
   }
 
   ngOnInit() {
+
+    this.toolbarStateService.changeCurrentlyActive(0);
 
     this.screen = screen;
 

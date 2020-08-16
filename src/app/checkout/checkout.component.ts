@@ -136,9 +136,13 @@ export class CheckoutComponent implements OnInit {
 
     this.paymentService.charge(buyReq)
       .subscribe(data => {
-        this.alertService.openSnackBar('Success!', false);
-        this.loading = false;
-        this.closeDialog();
+        setTimeout(() => {
+            this.alertService.openSnackBar('Success!', false);
+            this.loading = false;
+            this.closeDialog();
+          },
+          4000);
+
       }, error => {
         this.alertService.openSnackBar('Failed to buy the products', true);
         this.loading = false;

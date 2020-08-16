@@ -46,4 +46,9 @@ export class ToolbarComponent implements OnInit {
     this.toolbarStateService.changeCurrentlyActive(3);
     this.router.navigate(['/admin']);
   }
+
+  orderManagement() {
+    this.toolbarStateService.changeCurrentlyActive(4);
+    this.router.navigate(['/order-management']);
+  }
 }

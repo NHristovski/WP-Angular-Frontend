@@ -39,6 +39,7 @@ import { AdminComponent } from './admin/admin.component';
 import {MatSelectModule} from '@angular/material/select';
 import { RestockDialogComponent } from './restock-dialog/restock-dialog.component';
 import { OrderDetailsComponent } from './order-details/order-details.component';
+import { OrderManagementComponent } from './order-management/order-management.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,6 +58,7 @@ import { OrderDetailsComponent } from './order-details/order-details.component';
     AdminComponent,
     RestockDialogComponent,
     OrderDetailsComponent,
+    OrderManagementComponent,
   ],
   imports: [
     BrowserModule,

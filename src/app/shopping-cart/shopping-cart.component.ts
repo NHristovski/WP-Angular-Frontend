@@ -43,6 +43,8 @@ export class ShoppingCartComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.toolbarStateService.changeCurrentlyActive(2);
+
     this.currencyForm = this.formBuilder.group({
       currency: ['MKD', Validators.compose([Validators.required])]
     });
@@ -186,6 +188,7 @@ export class ShoppingCartComponent implements OnInit {
       if (result) {
         this.shoppingCart.shoppingCartItems = [];
         this.dataSource.data = [];
+        this.router.navigate(['/shopping-cart-history']);
       }
     });
   }

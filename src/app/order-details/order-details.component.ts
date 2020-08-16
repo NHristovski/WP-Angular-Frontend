@@ -36,12 +36,24 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   startPooling(): void {
-    this.subscription = interval(5000).subscribe(x =>
+    this.subscription = interval(3000).subscribe(x =>
       this.orderService.getOrderStatus(this.order.orderId.id)
         .subscribe(data => {
           console.log('obtained scheduled status', data.status);
           console.log(JSON.stringify(data));
           this.orderStatus = data.status;
+          if (this.orderStatus === 0) {
+            this.order.status = 'NOT_READY';
+          }
+          if (this.orderStatus === 1) {
+            this.order.status = 'READY';
+          }
+          if (this.orderStatus === 2) {
+            this.order.status = 'DELIVERING';
+          }
+          if (this.orderStatus === 3) {
+            this.order.status = 'DELIVERED';
+          }
         })
     );
   }

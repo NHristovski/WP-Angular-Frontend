@@ -1,6 +1,6 @@
 ﻿import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
 
 import {AlertService, AuthenticationService} from '../_services';
 
@@ -37,7 +37,11 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(this.model.username, this.model.password)
       .subscribe(
         data => {
-          this.router.navigate([this.returnUrl]);
+          if (this.authenticationService.hasAdminRole()) {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate([this.returnUrl]);
+          }
           this.alertService.openSnackBar(`Login successful`, false);
         },
         error => {

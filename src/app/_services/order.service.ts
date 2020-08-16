@@ -20,4 +20,24 @@ export class OrderService {
     console.log('called get order status with id ', id);
     return this.http.get(`${this.ordersApiUrl}/${id}/status`);
   }
+
+  getAllOrders() {
+    return this.http.get(`${this.ordersApiUrl}/admin/all`);
+  }
+
+  searchOrders(query: string) {
+    return this.http.get(`${this.ordersApiUrl}/admin/search/${query}`);
+  }
+
+  delivered(id: string) {
+    return this.http.post(`${this.ordersApiUrl}/delivered/${id}`, null);
+  }
+
+  pickUp(id: string) {
+    return this.http.post(`${this.ordersApiUrl}/pickUp/${id}`, null);
+  }
+
+  ready(id: string) {
+    return this.http.post(`${this.ordersApiUrl}/ready/${id}`, null);
+  }
 }

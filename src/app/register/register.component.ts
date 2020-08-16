@@ -10,8 +10,6 @@ export function MustMatch(controlName: string, matchingControlName: string) {
     const control = formGroup.controls[controlName];
     const matchingControl = formGroup.controls[matchingControlName];
 
-    console.log('control', control);
-    console.log('match control', matchingControl);
 
     if (matchingControl.errors && !matchingControl.errors.mustMatch) {
       // return if another validator has already found an error on the matchingControl
@@ -71,7 +69,6 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
 
-    console.log('email', this.getFormControls.email.errors);
     this.submitted = true;
 
     // stop here if form is invalid
