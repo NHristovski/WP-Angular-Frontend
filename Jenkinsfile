@@ -35,7 +35,7 @@ pipeline {
                        docker rmi $image_name
                     fi
 
-                    docker build . -t 0.0.1
+                    docker build . -t ${image_name}
                     docker push $image_name
                 '''
       }
