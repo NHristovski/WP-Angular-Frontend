@@ -6,6 +6,7 @@ import {Constants} from '../_helpers/constants';
 import {AuthenticationService} from './authentication.service';
 import {EditProductRequest} from '../_models/message/request/EditProductRequest';
 import {ProductId} from '../_models/_value/product/ProductId';
+import {ProductSavedResponse} from '../_models/_value/response/ProductSavedResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class ProductService {
   }
 
   addProduct(product: AddProductRequest) {
-    return this.http.post(`${this.productApiUrl}/product/add_product`, product);
+    return this.http.post<ProductSavedResponse>(`${this.productApiUrl}/product/add_product`, product);
   }
 
   getAllProducts(page: number, size: number) {
@@ -51,6 +52,6 @@ export class ProductService {
   }
 
   editProduct(request: EditProductRequest, id: string) {
-    return this.http.put(`${this.productApiUrl}/product/edit_product`, request);
+    return this.http.put<ProductSavedResponse>(`${this.productApiUrl}/product/edit_product`, request);
   }
 }

@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {RestockRequest} from '../_models/message/request/RestockRequest';
 import {ProductId} from '../_models/_value/product/ProductId';
 import {Price} from '../_models/_value/product/Price';
+import {CheckStockResponse} from '../_models/_value/response/CheckStockResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,6 @@ export class InventoryService {
         name: productName
       }
     };
-    return this.http.post(`${this.inventoryApiUrl}/check_stock/${productId.id}`, checkStockRequest);
+    return this.http.post<CheckStockResponse>(`${this.inventoryApiUrl}/check_stock/${productId.id}`, checkStockRequest);
   }
 }

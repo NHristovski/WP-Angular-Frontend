@@ -24,16 +24,16 @@ export class HomeComponent implements OnInit {
   screen: any;
 
   constructor(
-    private authenticationService: AuthenticationService,
+    public authenticationService: AuthenticationService,
     private userService: UserService,
     private router: Router,
-    private route: ActivatedRoute,
+    public route: ActivatedRoute,
     private workerService: WorkerService,
     private productService: ProductService,
     private categoryService: CategoryService,
     private alertService: AlertService,
     private formBuilder: FormBuilder,
-    private toolbarStateService: ToolbarStateService
+    public toolbarStateService: ToolbarStateService
   ) {
   }
 

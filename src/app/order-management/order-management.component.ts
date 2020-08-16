@@ -4,6 +4,7 @@ import {AlertService} from '../_services';
 import {Order} from '../_models/order/Order';
 import {OrderService} from '../_services/order.service';
 import {ToolbarStateService} from '../_services/toolbar-state.service';
+import {GetOrdersResponse} from '../_models/_value/response/GetOrdersResponse';
 
 @Component({
   selector: 'app-order-management',
@@ -33,7 +34,7 @@ export class OrderManagementComponent implements OnInit {
     this.toolbarStateService.changeCurrentlyActive(4);
 
     this.orderService.getAllOrders()
-      .subscribe(data => {
+      .subscribe((data: GetOrdersResponse) => {
         this.orders = data.orders;
       }, error => {
         this.alertService.openSnackBar(`Failed to get the orders!`, true);
@@ -59,7 +60,7 @@ export class OrderManagementComponent implements OnInit {
     } else {
       console.log('seraching for', query);
       this.orderService.searchOrders(query)
-        .subscribe(data => {
+        .subscribe((data: GetOrdersResponse) => {
           this.orders = data.orders;
         }, error => {
           this.alertService.openSnackBar(`Failed to search orders!`, true);

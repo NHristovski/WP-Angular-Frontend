@@ -6,6 +6,7 @@ import {OrderService} from '../_services/order.service';
 import {MatDialog} from '@angular/material/dialog';
 import {OrderDetailsComponent} from '../order-details/order-details.component';
 import {ToolbarStateService} from '../_services/toolbar-state.service';
+import {GetOrdersResponse} from '../_models/_value/response/GetOrdersResponse';
 
 @Component({
   selector: 'app-shopping-cart-history',
@@ -29,7 +30,7 @@ export class ShoppingCartHistoryComponent implements OnInit {
     this.toolbarStateService.changeCurrentlyActive(2);
 
     this.orderService.getOrders()
-      .subscribe(data => {
+      .subscribe((data: GetOrdersResponse) => {
         this.orders = data.orders;
 
       }, error => {

@@ -11,9 +11,9 @@ import {ToolbarStateService} from '../_services/toolbar-state.service';
 export class ToolbarComponent implements OnInit {
   public username: string;
 
-  constructor(private authService: AuthenticationService,
+  constructor(public authService: AuthenticationService,
               private router: Router,
-              private toolbarStateService: ToolbarStateService
+              public toolbarStateService: ToolbarStateService
   ) {
   }
 

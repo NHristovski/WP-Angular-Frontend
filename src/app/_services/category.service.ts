@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Constants} from '../_helpers/constants';
+import {GetAllCategoriesResponse} from '../_models/_value/response/GetAllCategoriesResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class CategoryService {
   }
 
   getAllCategories() {
-    return this.http.get(`${this.apiUrl}/category`);
+    return this.http.get<GetAllCategoriesResponse>(`${this.apiUrl}/category`);
   }
-  
+
 }

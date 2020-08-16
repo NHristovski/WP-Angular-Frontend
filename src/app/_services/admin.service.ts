@@ -3,6 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {Constants} from '../_helpers/constants';
 import {AddCategoryRequest} from '../_models/message/request/AddCategoryRequest';
 import {Name} from '../_models/_value/Name';
+import {CategorySavedResponse} from '../_models/_value/response/CategorySavedResponse';
+import {ProductSavedResponse} from '../_models/_value/response/ProductSavedResponse';
+import {ProductsSearchResponse} from '../_models/_value/response/ProductsSearchResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +28,7 @@ export class AdminService {
 
     request.categoryName = nameObj;
 
-    return this.http.post(`${this.apiUrl}/category/add_category`, request);
+    return this.http.post<CategorySavedResponse>(`${this.apiUrl}/category/add_category`, request);
   }
 
   deleteCategory(id: string) {
@@ -37,10 +40,10 @@ export class AdminService {
   }
 
   search(value: string) {
-    return this.http.get(`${this.apiUrl}/product/search/${value}`);
+    return this.http.get<ProductsSearchResponse>(`${this.apiUrl}/product/search/${value}`);
   }
 
   refresh(id: string) {
-    return this.http.put(`${this.apiUrl}/product/refresh/${id}`, null);
+    return this.http.put<ProductSavedResponse>(`${this.apiUrl}/product/refresh/${id}`, null);
   }
 }
