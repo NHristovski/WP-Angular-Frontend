@@ -27,7 +27,9 @@ export function MustMatch(controlName: string, matchingControlName: string) {
   };
 }
 
-@Component({templateUrl: 'register.component.html'})
+
+@Component({templateUrl: 'register.component.html',
+  styleUrls: ['./register.component.css']})
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   loading = false;
